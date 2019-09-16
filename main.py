@@ -73,7 +73,7 @@ async def scrape(client, url, additionalUrls = []):
     for aUrl in additionalUrls:
         #print("adding additional url: " + aUrl)
         await url_queue.put(aUrl)
-    print(url_queue)
+    #print(url_queue)
 
     def task_completed(future):
         exc = future.exception()
