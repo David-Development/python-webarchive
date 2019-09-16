@@ -6,6 +6,9 @@ This is a quick hack demonstrating how to create WebKit/Safari `.webarchive` fil
 
 ```bash
 TARGET_URL=http://foo.com python3 main.py
+
+// with additional urls:
+TARGET_URL=http://localhost:8000/ios/index.ios.html ADDITIONAL_URLS="http://myurl.de/img1.png;http://myurl.de/img2.png" python3 main.py
 ```
 
 ## Why `.webarchive`?
@@ -40,9 +43,9 @@ The only hitch would be `WebResourceResponse` (which uses a [rather more complex
 
 ## Next Steps
 
-* [ ] Tie this into [pocket-archive-stream][pas]
-* [ ] Convert to/from [WARC][warc]
-* [ ] Look into integrating with [warcprox][warcprox]
+- [ ] Tie this into [pocket-archive-stream][pas]
+- [ ] Convert to/from [WARC][warc]
+- [ ] Look into integrating with [warcprox][warcprox]
 
 [biplist]: https://bitbucket.org/wooster/biplist
 [pas]: https://github.com/pirate/pocket-archive-stream

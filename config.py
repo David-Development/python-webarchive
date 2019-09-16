@@ -1,8 +1,9 @@
+from logging import CRITICAL, DEBUG, basicConfig, getLogger
 from os import environ
-from logging import getLogger, basicConfig, DEBUG, CRITICAL
 
 # Make sure cssutils keeps quiet while parsing
 import cssutils
+
 cssutils.log.setLevel(CRITICAL)
 
 # logfmt
@@ -17,6 +18,7 @@ ACCEPT_HEADERS = {
     "Accept-Encoding": "gzip, deflate"
 }
 TARGET_URL = environ.get('TARGET_URL', 'http://help.websiteos.com/websiteos/example_of_a_simple_html_page.htm')
+ADDITIONAL_URLS = environ.get('ADDITIONAL_URLS', '')
 OUTPUT_FILENAME = environ.get('OUTPUT_FILENAME', 'out.webarchive')
 CONCURRENCY = int(environ.get('CONCURRENCY', '4'))
 TIMEOUT = int(environ.get('TIMEOUT', '300'))

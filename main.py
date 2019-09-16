@@ -1,11 +1,15 @@
-from asyncio import ensure_future, get_event_loop, wait_for, Queue
-from aiohttp import ClientSession
-from config import log, USER_AGENT, TARGET_URL, ACCEPT_HEADERS, CONCURRENCY, TIMEOUT, OUTPUT_FILENAME
-from biplist import writePlist
-from urllib.parse import urljoin, urldefrag, urlparse, unquote
-from lxml import html
+from asyncio import Queue, ensure_future, get_event_loop, wait_for
 from cgi import parse_header
+from urllib.parse import unquote, urldefrag, urljoin, urlparse
+
+from aiohttp import ClientSession
+from biplist import writePlist
 from cssutils import getUrls, parseString
+from lxml import html
+
+from config import (ACCEPT_HEADERS, ADDITIONAL_URLS, CONCURRENCY,
+                    OUTPUT_FILENAME, TARGET_URL, TIMEOUT, USER_AGENT, log)
+
 
 async def crawler(client, url_queue, archive):
     while True:
@@ -55,7 +59,7 @@ async def crawler(client, url_queue, archive):
             url_queue.task_done()
 
 
-async def scrape(client, url):
+async def scrape(client, url, additionalUrls = []):
     tasks = []
     url_queue = Queue()
 
@@ -65,6 +69,11 @@ async def scrape(client, url):
         'items': []
     }
     await url_queue.put(url)
+
+    for aUrl in additionalUrls:
+        #print("adding additional url: " + aUrl)
+        await url_queue.put(aUrl)
+    print(url_queue)
 
     def task_completed(future):
         exc = future.exception()
@@ -93,4 +102,5 @@ async def scrape(client, url):
 if __name__ == '__main__':
     client = ClientSession()
     loop = get_event_loop()
-    loop.run_until_complete(scrape(client, TARGET_URL))
+    additionalUrls = ADDITIONAL_URLS.split(";")
+    loop.run_until_complete(scrape(client, TARGET_URL, additionalUrls))
