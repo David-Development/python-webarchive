@@ -8,7 +8,7 @@ This is a quick hack demonstrating how to create WebKit/Safari `.webarchive` fil
 TARGET_URL=http://foo.com python3 main.py
 
 // with additional urls:
-TARGET_URL=http://localhost:8000/ios/index.ios.html ADDITIONAL_URLS="http://myurl.de/img1.png;http://myurl.de/img2.png" python3 main.py
+TARGET_URL=http://localhost:8000/ios/index.ios.html CHANGE_DOMAIN_FROM="http://localhost:8000/" CHANGE_DOMAIN_TO="https://my-fancy-domain.de/" ADDITIONAL_URLS="http://myurl.de/img1.png;http://myurl.de/img2.png" python3 main.py
 ```
 
 ## Why `.webarchive`?

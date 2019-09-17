@@ -7,8 +7,9 @@ from biplist import writePlist
 from cssutils import getUrls, parseString
 from lxml import html
 
-from config import (ACCEPT_HEADERS, ADDITIONAL_URLS, CONCURRENCY,
-                    OUTPUT_FILENAME, TARGET_URL, TIMEOUT, USER_AGENT, log)
+from config import (ACCEPT_HEADERS, ADDITIONAL_URLS, CHANGE_DOMAIN_FROM,
+                    CHANGE_DOMAIN_TO, CONCURRENCY, OUTPUT_FILENAME, TARGET_URL,
+                    TIMEOUT, USER_AGENT, log)
 
 
 async def crawler(client, url_queue, archive):
@@ -24,10 +25,14 @@ async def crawler(client, url_queue, archive):
             else:
                 data = await response.read()
                 content_type, params = parse_header(response.headers['content-type'])
+                if CHANGE_DOMAIN_FROM and CHANGE_DOMAIN_TO:
+                    wrUrl = url.replace(CHANGE_DOMAIN_FROM, CHANGE_DOMAIN_TO)
+                else:
+                    wrUrl = url
                 item = {
                     "WebResourceData": data,
                     "WebResourceMIMEType": content_type,
-                    "WebResourceURL": url
+                    "WebResourceURL": wrUrl
                 }
                 if 'charset' in params:
                     item['WebResourceTextEncodingName'] = params['charset']
