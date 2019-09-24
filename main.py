@@ -107,5 +107,6 @@ async def scrape(client, url, additionalUrls = []):
 if __name__ == '__main__':
     client = ClientSession()
     loop = get_event_loop()
-    additionalUrls = ADDITIONAL_URLS.split(";")
+    #additionalUrls = ADDITIONAL_URLS.split(";")
+    additionalUrls = list(filter(None, ADDITIONAL_URLS.split(";"))) # remove empty urls from list
     loop.run_until_complete(scrape(client, TARGET_URL, additionalUrls))
