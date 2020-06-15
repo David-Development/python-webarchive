@@ -22,7 +22,6 @@ async def crawler(client, url_queue, archive):
             response = await client.get(url, headers=headers)
             if response.status != 200:
                 raise Exception("got response code other than 200 for url: {}".format(url))
-                log.warn('BAD RESPONSE: {}: {}'.format(response.status, url))
             else:
                 data = await response.read()
                 content_type, params = parse_header(response.headers['content-type'])
