@@ -16,11 +16,12 @@ async def crawler(client, url_queue, archive):
     while True:
         url = await url_queue.get()
         try:
-            log.debug(url)
+            log.debug("Crawling url: {}".format(url))
             headers = ACCEPT_HEADERS
             headers['Referer'] = archive['top']
             response = await client.get(url, headers=headers)
             if response.status != 200:
+                raise Exception("got response code other than 200 for url: {}".format(url))
                 log.warn('BAD RESPONSE: {}: {}'.format(response.status, url))
             else:
                 data = await response.read()
@@ -36,27 +37,7 @@ async def crawler(client, url_queue, archive):
                 }
                 if 'charset' in params:
                     item['WebResourceTextEncodingName'] = params['charset']
-                # TODO: attempt to reproduce the way HTTP headers are stored (NSKeyedArchiver?)
                 archive['items'].append(item)
-                archive['seen'][url] = True
-                if 'text/html' == content_type:
-                    dom = html.fromstring(data)
-                    patterns = ['//img/@src', '//img/@data-src', '//img/@data-src-retina', '//script/@src', "//link[@rel='stylesheet']/@href"]
-                    for path in patterns:
-                        for attr in dom.xpath(path):
-                            log.debug("{}: {} {}".format(path, url, attr))
-                            url = unquote(urljoin(url, urldefrag(attr)[0]))
-                            if url not in archive['seen']:
-                                archive['seen'][url] = True
-                                await url_queue.put(url)
-                elif 'text/css' == content_type:
-                    # TODO: nested @import and better path inference
-                    for attr in getUrls(parseString(data)):
-                        log.debug(attr)
-                        url = unquote(urljoin(url, urldefrag(attr)[0]))
-                        if url not in archive['seen']:
-                            archive['seen'][url] = True
-                            await url_queue.put(url)
         except Exception as exc:
             log.warn('Exception {}:'.format(exc), exc_info=True)
 
@@ -70,7 +51,6 @@ async def scrape(client, url, additionalUrls = []):
 
     archive = {
         'top': url,
-        'seen': {},
         'items': []
     }
     await url_queue.put(url)
@@ -94,7 +74,8 @@ async def scrape(client, url, additionalUrls = []):
 
     for task in tasks:
         task.cancel()
-    client.close()
+
+    await client.close()
 
     webarchive = {
         'WebMainResource': archive['items'].pop(0),
